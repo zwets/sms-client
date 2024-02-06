@@ -3,9 +3,8 @@
 CLI tools for managing and testing [SMS Gateway](https://github.com/zwets/sms-gateway)
 and [SMS Scheduler](https://github.com/zwets/sms-scheduler).
 
-This project builds the `sms-client` JAR, which has tools to manage the crypto
-for the [SMS Gateway](https://github.com/zwets/sms-gateway), and for sending
-test messages using it.
+This repository builds the **sms-client** JAR and holds scripts for managing
+and testing the crypto for the [SMS Gateway](https://github.com/zwets/sms-gateway).
 
 
 ## Background
@@ -33,22 +32,22 @@ The scripts in this repo are for:
 
 #### Security
 
-The built-in vault has keypass 123456.  Location and keypass are set in the
-application properties.  In production, these files should have restricted
-read access.
+The built-in vault uses 123456 as the store and key password.  The location
+and password for the vault are set in SMS Gateway's application properties.
+You should restrict access to both files in your production environment.
 
 
 ## Usage
 
 Create a new vault KEYSTORE or extend existing KEYSTORE with a key pair for
-alias CLIENT (if KEYPASS is omitted, 123456 is used):
+alias CLIENT:
 
-    bin/add-keypair KEYSTORE [KEYPASS] CLIENT
+    bin/new-keypair KEYSTORE [STOREPASS] CLIENT
 
 Obtain the public key (in base64 encoded DER format) for alias CLIENT in
 KEYSTORE:
 
-    bin/get-pubkey KEYSTORE [KEYSTORE] CLIENT
+    bin/get-pubkey KEYSTORE [STOREPASS] CLIENT
 
 Encrypt stdin with public key PUBKEY (a base64 string from previous step),
 producing the base64 encoded ciphertext on stdout:

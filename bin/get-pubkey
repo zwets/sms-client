@@ -1,0 +1,11 @@
+#!/bin/bash
+
+export LC_ALL="C"
+set -euo pipefail
+
+(( $# == 2 || $# == 3 )) || {
+    echo "Usage: ${0##*/} KEYSTORE [KEYPASS] CLIENT" >&2
+    exit 1
+}
+
+"$(dirname "$(realpath "$0")")/sms-client" pubkey "$@"

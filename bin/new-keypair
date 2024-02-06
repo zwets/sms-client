@@ -1,0 +1,20 @@
+#!/bin/bash
+
+export LC_ALL="C"
+set -euo pipefail
+
+err_exit() { echo "${0##*/}: $*" >&2; exit 1; }
+usage_exit() { echo "Usage: ${0##*/} KEYSTORE [KEYPASS] CLIENT" >&2; exit 1; }
+
+# The javax.security API strangely does not expose the functionality to
+# generate a new key pair in a keystore, so instead of using our client
+# JAR, we invoke keytool.
+
+KEYTOOL="$(type -p keytool)" || err_exit "keytool command not found"
+
+(( $# == 2 || $# == 3 )) || usage_exit
+
+KEYSTORE="$1"
+(( $# == 3 )) && KEYPASS="$2" ALIAS="$3" || KEYPASS="123456" ALIAS="$2"
+
+keytool -genkeypair -keyalg RSA -keysize 4096 -validity 36500 -storepass "$KEYPASS" -keystore "$KEYSTORE" -alias "$ALIAS" -dname "CN=$ALIAS"

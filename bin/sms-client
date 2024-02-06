@@ -1,0 +1,8 @@
+#!/bin/bash
+
+export LC_ALL="C"
+set -euo pipefail
+
+VERSION=0.9.7
+
+java -jar "$(dirname "$(realpath "$0")")/../target/sms-client-${VERSION}.jar" "$@"

@@ -3,4 +3,7 @@
 export LC_ALL="C"
 set -euo pipefail
 
-java -jar "$(dirname "$(realpath "$0")")/sms-client.jar" "$@"
+JAR="$(dirname "$(realpath "$0")")/sms-client.jar"
+[ -f "$JAR" ] || { echo "${0##*/}: symlink to the JAR is missing: $JAR" >&2; exit 1; }
+
+java -jar "$JAR" "$@"

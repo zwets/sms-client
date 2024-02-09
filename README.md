@@ -1,10 +1,10 @@
 # sms-client 
 
-CLI tools for managing and testing [SMS Gateway](https://github.com/zwets/sms-gateway)
-and [SMS Scheduler](https://github.com/zwets/sms-scheduler).
-
 This repository builds the **sms-client** JAR and holds scripts for managing
-and testing the crypto for the [SMS Gateway](https://github.com/zwets/sms-gateway).
+the crypto for the [SMS Gateway](https://github.com/zwets/sms-gateway).
+
+> CLI tools for testing the SMS Gateway and SMS Scheduler are still bundled
+> in their respective repositories but may eventually move here.
 
 
 ## Background
@@ -22,7 +22,7 @@ gateway holds the private key in its 'vault'.
 
 The vault must hold a key pair for each client.  The sms-gateway jar comes
 with a built-in vault with a default key pair for the 'test' client.  In
-production you either copy and extend that vault, or create a new one.
+production you either copy and extend that vault, or create a new vault.
 
 The scripts in this repo are for:
 
@@ -34,23 +34,25 @@ The scripts in this repo are for:
 
 The built-in vault uses 123456 as the store and key password.  The location
 and password for the vault are set in SMS Gateway's application properties.
-You should restrict access to both files in your production environment.
+You should restrict access to these files in your production environment.
 
 
 ## Installation
 
-@TODO@
+Run `./make-dist.sh` to generate a distributable tarball.  Unpack this im
+`/opt` and you will have the runnable jar in `/opt/sms-client`, and the
+scripts in `/opt/sms-client/bin`.
 
 
 ## Usage
 
-Create a new vault KEYSTORE or extend existing KEYSTORE with a key pair for
-alias CLIENT:
+To create a new vault KEYSTORE or extend existing KEYSTORE with a key pair
+for alias CLIENT:
 
     bin/new-keypair KEYSTORE [STOREPASS] CLIENT
 
-Obtain the public key (in base64 encoded DER format) for alias CLIENT in
-KEYSTORE:
+To obtain the public key (in base64 encoded DER format) for alias CLIENT
+in KEYSTORE:
 
     bin/get-pubkey KEYSTORE [STOREPASS] CLIENT
 

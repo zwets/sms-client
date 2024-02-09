@@ -37,6 +37,11 @@ and password for the vault are set in SMS Gateway's application properties.
 You should restrict access to both files in your production environment.
 
 
+## Installation
+
+@TODO@
+
+
 ## Usage
 
 Create a new vault KEYSTORE or extend existing KEYSTORE with a key pair for

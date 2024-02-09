@@ -3,6 +3,4 @@
 export LC_ALL="C"
 set -euo pipefail
 
-VERSION=0.9.7
-
-java -jar "$(dirname "$(realpath "$0")")/../target/sms-client-${VERSION}.jar" "$@"
+java -jar "$(dirname "$(realpath "$0")")/sms-client.jar" "$@"

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    Copyright (C) 2013 Marco van Zwetselaar
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+  -->
+  <head>
+    <title>Phone Number Encoder</title>
+    <meta charset="utf-8">
+    <style type="text/css">
+
+body {
+    font-family: Verdana, Sans;
+}
+
+div#div_main {
+    padding: 10px 20px;
+}
+div#div_main.good {
+  background-color: #CFC;
+}
+div#div_main.wrong {
+  background-color: #FCC;
+}
+
+div#div_input {
+  padding: 20px 20px;
+}
+#input {
+  font-family: Sans Mono, Mono;
+  font-weight: bold;
+  font-size: 300%;
+  border-style: none;
+  border-color: #000;
+  padding: 10px 20px;
+}
+#input.good {
+  color: #010;
+  background-color: #EFE;
+}
+#input.wrong {
+  color: #100;
+  background-color: #FEE;
+}
+
+div#div_output {
+    padding: 20px 20px;
+}
+#output {
+    font-family: Sans Mono, Mono;
+    font-weight: bold;
+    font-size: 450%;
+    border-style: solid;
+    padding: 10px 20px;
+}
+#output.good {
+  color: #010;
+  background-color: #FFE;
+  border-color: #060;
+}
+#output.wrong {
+  color: #988;
+  background-color: #FEE;
+  border-color: #988;
+}
+    </style>
+    <script type="application/javascript">
+"use strict";
+
+window.onload = function () {
+
+  var main_div = document.getElementById("div_main");
+  var input_div = document.getElementById("div_input");
+  var input_field = document.getElementById("input");
+  var output_div = document.getElementById("div_output");
+  var output_span = document.getElementById("output");
+
+  function encode (input) {
+
+    var r = /^0([0-9]{9})$/.exec(input);
+    if (r !== null) {
+
+      var p = r[1], n = 0;
+      for (var i = 0; i < 6; ++i)
+        for (var j = 0; j < 5; ++j, p >>= 1)
+          n |= (p & 1) << (29 - (6*j + i));
+
+      var s = "", w = 6, a = "0297WCYSD6AFKQEJ5N3BT4G8PXMHZ1VR";
+      do { s = a.charAt(n & 31) + s; n >>= 5; w -= 1; } while (n != 0 || w > 0);
+
+      return s.substr(0,3) + "-" + s.substr(3,3);
+    }
+  }
+
+  function show_output (str) {
+    if (str) {
+      main_div.className = input_div.className = input_field.className = output_div.className = output_span.className = "good";
+      output_span.innerHTML = str;
+    }
+    else {
+      main_div.className = input_div.className = input_field.className = output_div.className = output_span.className = "wrong";
+      output_span.innerHTML = "???-???";
+    }
+  }
+
+  input_field.addEventListener("input", function (ev) {
+    var input = input_field.value;
+    if (input.length == 0) {
+      input_field.value = "0";
+    }
+    else if (input.charAt(0) != '0') {
+      input_field.value = "0" + input; //input.slice(0,9);
+    }
+    show_output(encode(input_field.value));
+  }, false);
+
+  input_field.value = "0";
+  input_field.focus();
+  show_output (null);
+
+}
+    </script>
+  </head>
+  <body>
+    <div id="div_main">
+      <div id="div_input">
+        <input id="input" size="10" maxlength="10" pattern="0[0-9]{9}" title="Enter a 10 digit phone number starting with 0" autocomplete="off" autofocus="true"></input>
+      </div>
+      <div id="div_output">
+        <span id="output">???-???</span>
+      </div>
+    </div>
+  </body>
+  <!-- 
+  vim:sts=2:sw=2:ai:si:et: 
+  -->
+</html>
+

@@ -5,12 +5,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.PublicKey;
 import java.util.Base64;
+
+import it.zwets.sms.crock.PhoneNumberEncoder;
 import it.zwets.sms.crypto.PkiUtils;
 import it.zwets.sms.crypto.Vault;
 
 public class Main {
 
-    public static String DEFAULT_KEYPASS = "123456";
+    public static final String DEFAULT_KEYPASS = "123456";
+    public static final PhoneNumberEncoder PHONE_ENCODER = new PhoneNumberEncoder();
 
     public static void main(String[] args) {
 
@@ -54,10 +57,20 @@ public class Main {
                 byte[] bytes = PkiUtils.encrypt(key, Files.readAllBytes(Path.of("/dev/stdin")));
                 Files.write(Path.of("/dev/stdout"), Base64.getEncoder().encode(bytes));
             }
+            else if (args.length == 2 && args[0].equals("encrock"))
+            {
+                System.out.println(PHONE_ENCODER.encode(args[1]));
+            }
+            else if (args.length == 2 && args[0].equals("decrock"))
+            {
+                System.out.println(PHONE_ENCODER.decode(args[1]));
+            }
             else {
                 System.err.println("Usage: sms-client aliases KEYSTORE [KEYPASS]");
                 System.err.println("       sms-client pubkey KEYSTORE [KEYPASS] ALIAS");
                 System.err.println("       sms-client encrypt PUBKEY");
+                System.err.println("       sms-client encrock PHONENUMBER");
+                
                 System.exit(1);
             }
         }

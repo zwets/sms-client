@@ -29,6 +29,7 @@ The scripts in this repo are for:
  * Creating a new vault or adding key pairs to an existing vault
  * Retrieving from a vault the public key for a client
  * Encrypting content using a public key (for test and demo purposes)
+ * Encrocking (yes, it says _crock_) phone numbers
 
 #### Security
 

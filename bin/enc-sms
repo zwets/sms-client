@@ -1,0 +1,13 @@
+#!/bin/bash
+
+export LC_ALL="C"
+set -euo pipefail
+
+(( $# >= 4 )) || { echo "Usage: ${0##*/} PUBFILE RECIPIENT SENDER BODY ..." >&2; exit 1; }
+
+PUBFILE="$1"
+RECIPIENT="$2"
+SENDER="$3"
+shift 3
+
+"$(dirname "$(realpath "$0")")/sms-client" enc-sms "$PUBFILE" "$RECIPIENT" "$SENDER" "$*"

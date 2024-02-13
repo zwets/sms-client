@@ -2,7 +2,6 @@ package it.zwets.sms.crypto;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.KeyStore.PasswordProtection;
 import java.security.KeyStore.PrivateKeyEntry;
@@ -26,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * 
  * The <code>keytool -genkeypair</code> command generates a key pair
  * and stores it in a keystore.  Entries in a keystore are identified
- * by aliases (string values that we call "key IDs" below).
+ * by aliases.  In SMS Gateway, each client has its own entry.
  * 
  * To create the keystore and add entries, use keytool as follows:
  * <pre>
@@ -34,7 +33,9 @@ import org.slf4j.LoggerFactory;
  *    -storepass PASSWORD -keystore FILENAME -alias ALIAS -dname CN=ALIAS
  * </pre>
  * 
- * To extract the public key for the generated entry as a DER file, use:
+ * To extract the public key for the generated entry as a DER file, use
+ * the {@link #getPublicKey(String)} method, or with keytool and openssl:
+ * 
  * <pre>
  * keytool -exportcert -keystore FILENAME -storepass 123456 -alias ALIAS2 |
  * openssl x509 -pubkey |
@@ -87,9 +88,9 @@ public class Vault {
 	 * @throws RuntimeException for any underlying checked exception
 	 */
 	public PublicKey getPublicKey(String alias) {
-		return getKeyPair(alias).getPublic();
+	    return getEntry(alias).getCertificate().getPublicKey();
 	}
-	
+
 	/**
 	 * Decrypt the cyphertext with the private key for alias.
 	 * 
@@ -115,19 +116,24 @@ public class Vault {
 
 	private PrivateKeyEntry getEntry(String alias) {
 		try {
-			return (PrivateKeyEntry) getKeyStore().getEntry(alias, new PasswordProtection(keyStorePassword));
+		    PrivateKeyEntry pke = (PrivateKeyEntry) getKeyStore().getEntry(alias, new PasswordProtection(keyStorePassword));
+		    if (pke == null) {
+	            LOG.error("No key in keystore for alias: {}", alias);
+		        throw new RuntimeException("No key in keystore for alias: %s".formatted(alias));
+		    }
+		    return pke;
 		} catch (NoSuchAlgorithmException | UnrecoverableEntryException | KeyStoreException e) {
 			LOG.error("Exception retrieving keystore entry '{}': {}", alias, e.getMessage());
 			throw new RuntimeException(e.getMessage(), e.getCause());
 		}
 	}
 	
-	private KeyPair getKeyPair(String alias) {
-		PrivateKeyEntry pke = getEntry(alias);
-		return new KeyPair(pke.getCertificate().getPublicKey(), pke.getPrivateKey());
-	}
+//	private KeyPair getKeyPair(String alias) {
+//		PrivateKeyEntry pke = getEntry(alias);
+//		return new KeyPair(pke.getCertificate().getPublicKey(), pke.getPrivateKey());
+//	}
 
 	private PrivateKey getPrivateKey(String alias) {
-		return getKeyPair(alias).getPrivate();
+		return getEntry(alias).getPrivateKey();
 	}
 }

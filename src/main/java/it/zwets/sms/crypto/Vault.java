@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * <pre>
  * keytool -exportcert -keystore FILENAME -storepass 123456 -alias ALIAS2 |
  * openssl x509 -pubkey |
- * openssl rsa -RSAPublicKey_in -outform DER -pubout -out ALIAS.pub
+ * (unneeded?) openssl rsa -RSAPublicKey_in -outform DER -pubout -out ALIAS.pub
  * </pre>
  * 
  * The resulting public key can be used by {@link PkiUtils#encrypt()} to
@@ -100,7 +100,7 @@ public class Vault {
 	 * @throws RuntimeException for any underlying checked exception
 	 */
 	public byte[] decrypt(String alias, byte[] ciphertext) {
-		return PkiUtils.decrypt(getPrivateKey(alias), ciphertext);
+		return PkiCrypto.decrypt(getPrivateKey(alias), ciphertext);
 	}
 
 	private KeyStore getKeyStore() {

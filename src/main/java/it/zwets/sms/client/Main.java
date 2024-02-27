@@ -1,12 +1,17 @@
 package it.zwets.sms.client;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Base64;
 
 import it.zwets.sms.crock.PhoneNumberEncoder;
+import it.zwets.sms.crypto.OdkCrypto;
+import it.zwets.sms.crypto.PkiCrypto;
 import it.zwets.sms.crypto.PkiUtils;
 import it.zwets.sms.crypto.Vault;
 import it.zwets.sms.message.SmsMessage;
@@ -20,7 +25,7 @@ public class Main {
         byte[] keyBytes = Files.readAllBytes(pubFile);
         keyBytes = Base64.getDecoder().decode(keyBytes);
         PublicKey key = PkiUtils.readPublicKey(keyBytes);
-        byte[] ciphertext = PkiUtils.encrypt(key, plaintext);
+        byte[] ciphertext = PkiCrypto.encrypt(key, plaintext);
         return Base64.getEncoder().encode(ciphertext);
     }
 
@@ -79,11 +84,23 @@ public class Main {
                 Files.write(Path.of("/dev/stdout"), 
                         encryptWithPubkey(Path.of(args[1]), sms.asBytes()));
             }
+            else if (args.length == 5 && "kobo-dec".equals(args[0]))
+            {
+                PrivateKey privKey = PkiUtils.readPrivateKey(args[1]);
+                String base64EncKey = args[2];
+                String instanceId = args[3];
+                String inFile = args[4];
+
+                FileInputStream is = new FileInputStream(new File(inFile));
+                OdkCrypto.Decryptor decryptor = new OdkCrypto.Decryptor(privKey, base64EncKey, instanceId);
+                decryptor.decrypt(is, System.out);
+            }
             else {
                 System.err.println("Usage: sms-client aliases KEYSTORE [KEYPASS]");
                 System.err.println("       sms-client pubkey KEYSTORE [KEYPASS] ALIAS");
                 System.err.println("       sms-client encrypt PUBKEY");
                 System.err.println("       sms-client encrock PHONENUMBER");
+                System.err.println("       sms-client kobo-dec PKFILE B64SYMKEY INSTANCE INFILE");
                 System.err.println("       sms-client enc-sms PUBKEY RECIPIENT SENDER MESSAGE");
                 
                 System.exit(1);
@@ -91,6 +108,7 @@ public class Main {
         }
         catch (Exception e) {
             System.err.println("sms-client: %s".formatted(e.getMessage()));
+            e.printStackTrace();
             System.exit(1);
         }
     }

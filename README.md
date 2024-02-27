@@ -30,6 +30,7 @@ The scripts in this repo are for:
  * Retrieving from a vault the public key for a client
  * Encrypting content using a public key (for test and demo purposes)
  * Encrocking (yes, it says _crock_) phone numbers
+ * Decrypting ODK/Kobo submissions
 
 #### Security
 

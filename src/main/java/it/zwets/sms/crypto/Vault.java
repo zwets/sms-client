@@ -2,6 +2,7 @@ package it.zwets.sms.crypto;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.KeyStore.PasswordProtection;
 import java.security.KeyStore.PrivateKeyEntry;
@@ -106,8 +107,20 @@ public class Vault {
 	private KeyStore getKeyStore() {
 		LOG.debug("Loading keystore: {}", keyStoreFileName);
 		try {
-			KeyStore keyStore = KeyStore.getInstance(new File(keyStoreFileName), keyStorePassword);
+			KeyStore keyStore;
+			
+			if (keyStoreFileName.startsWith("classpath:")) {
+			    keyStore = KeyStore.getInstance("PKCS12");
+			    InputStream inputStream = this.getClass().getClassLoader()
+			            .getResourceAsStream(keyStoreFileName.substring(10));
+			    keyStore.load(inputStream, keyStorePassword);
+			}
+			else {
+			    keyStore = KeyStore.getInstance(new File(keyStoreFileName), keyStorePassword);
+			}
+			
 			return keyStore;
+
 		} catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
 			LOG.error("Exception loading keystore {}: {}", keyStoreFileName, e.getMessage());
 			throw new RuntimeException(e.getMessage(), e.getCause());

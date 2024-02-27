@@ -183,17 +183,12 @@ public class OdkCrypto {
          * @param os an open {@link OutputStream}
          */
         public void encrypt(InputStream is, OutputStream os) {
-            CipherOutputStream cos = null;
-            try {
-                Cipher c = newCipher();
-                cos = new CipherOutputStream(os, c);
+            ;
+            try (CipherOutputStream cos =  new CipherOutputStream(os,newCipher())) {
                 is.transferTo(cos);
                 cos.close();
             } catch (IOException e) {
                 throw new RuntimeException("Failed to encrypt the ciphertext: %s".formatted(e.getMessage()), e);
-            }
-            finally {
-                if (cos != null) try { cos.close(); } catch (IOException e) { /* ignore */ }
             }
         }
         
@@ -274,17 +269,11 @@ public class OdkCrypto {
          * @param os an open {@link OutputStream}
          */
         public void decrypt(InputStream is, OutputStream os) {
-            CipherInputStream cis = null;
-            try {
-                Cipher c = newCipher();
-                cis = new CipherInputStream(is, c);
+            try (CipherInputStream cis = new CipherInputStream(is, newCipher())) {
                 cis.transferTo(os);
                 cis.close();
             } catch (IOException e) {
                 throw new RuntimeException("Failed to decrypt the ciphertext: %s".formatted(e.getMessage()), e);
-            }
-            finally {
-                if (cis != null) try { cis.close(); } catch (IOException e) { /* ignore */ }
             }
         }
         

@@ -113,6 +113,10 @@ public class Vault {
 			    keyStore = KeyStore.getInstance("PKCS12");
 			    InputStream inputStream = this.getClass().getClassLoader()
 			            .getResourceAsStream(keyStoreFileName.substring(10));
+			    if (inputStream == null) {
+			        LOG.error("Failed to read keystore from: {}", keyStoreFileName);
+			        throw new RuntimeException("No such file: %s".formatted(keyStoreFileName));
+			    }
 			    keyStore.load(inputStream, keyStorePassword);
 			}
 			else {

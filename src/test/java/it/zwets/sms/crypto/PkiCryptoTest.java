@@ -1,33 +1,42 @@
 package it.zwets.sms.crypto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.Base64;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class PkiCryptoTest {
     
-    public static final String PRIV_KEY_FNAME = "private.der";
-    public static final String PUB_KEY_FNAME = "public.der";
+    private static final PrivateKey PRIVKEY = TestingKeys.PRIVKEY;
+    private static final PublicKey PUBKEY = TestingKeys.PUBKEY;
     
-    private static PrivateKey PRIV_KEY;
-    private static PublicKey PUB_KEY;
-    
-    @BeforeAll
-    static void loadKeys() {
-        PRIV_KEY = PkiUtils.readPrivateKey(PkiCryptoTest.class.getClassLoader().getResourceAsStream(PRIV_KEY_FNAME));
-        PUB_KEY = PkiUtils.readPublicKey(PkiCryptoTest.class.getClassLoader().getResourceAsStream(PUB_KEY_FNAME));
+    @Test
+    public void testEncrypt() {
+        String input = "Hello World";
+        byte[] encrypted = PkiCrypto.encrypt(PUBKEY, input.getBytes());
+        
+        assertNotNull(encrypted);
+    }
+
+    @Test
+    public void testBase64StartsWithENC() {
+        String input = "Hello World";
+        byte[] encrypted = PkiCrypto.encrypt(PUBKEY, input.getBytes());
+        String b64string = Base64.getEncoder().encodeToString(encrypted);
+        
+        assertEquals("ENC", b64string.substring(0, 3));
     }
     
     @Test
-    void testEncryptAndDecrypt() {
+    public void testEncryptAndDecrypt() {
         String input = "Hello World";
-        byte[] encrypted = PkiCrypto.encrypt(PUB_KEY, input.getBytes());
-        byte[] decrypted = PkiCrypto.decrypt(PRIV_KEY, encrypted);
+        byte[] encrypted = PkiCrypto.encrypt(PUBKEY, input.getBytes());
+        byte[] decrypted = PkiCrypto.decrypt(PRIVKEY, encrypted);
         String output = new String(decrypted, StandardCharsets.UTF_8);
         
         assertEquals(output, input);

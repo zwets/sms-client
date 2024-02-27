@@ -7,25 +7,15 @@ import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class OdkCryptoTest {
     
-    public static final String PRIV_KEY_FNAME = "private.der";
-    public static final String PUB_KEY_FNAME = "public.der";
-    
-    private static PrivateKey PRIV_KEY;
-    private static PublicKey PUB_KEY;
-    
-    @BeforeAll
-    static void loadKeys() {
-        PRIV_KEY = PkiUtils.readPrivateKey(OdkCryptoTest.class.getClassLoader().getResourceAsStream(PRIV_KEY_FNAME));
-        PUB_KEY = PkiUtils.readPublicKey(OdkCryptoTest.class.getClassLoader().getResourceAsStream(PUB_KEY_FNAME));
-    }
+    private static final PrivateKey PRIV_KEY = TestingKeys.PRIVKEY;
+    private static final PublicKey PUB_KEY = TestingKeys.PUBKEY;
     
     @Test
-    void testEncryptAndDecrypt() {
+    public void testEncryptAndDecrypt() {
         String input = "Hello World";
         OdkCrypto.OdkResult r = OdkCrypto.encrypt(PUB_KEY, input.getBytes(), "INST_1");
         assertNotNull(r);

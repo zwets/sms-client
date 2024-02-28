@@ -85,12 +85,22 @@ public class Vault {
 	 * Return the public key stored for the alias
 	 * 
 	 * @param alias
-	 * @return the public key associated with the key
+	 * @return the public key associated with the alias
 	 * @throws RuntimeException for any underlying checked exception
 	 */
 	public PublicKey getPublicKey(String alias) {
 	    return getEntry(alias).getCertificate().getPublicKey();
 	}
+	
+	/**
+	 * Return the private key stored for the alias
+	 * @param alias
+	 * @return the private key associated with the alias
+     * @throws RuntimeException for any underlying checked exception
+	 */
+	public PrivateKey getPrivateKey(String alias) {
+	    return getEntry(alias).getPrivateKey();
+    }
 
 	/**
 	 * Decrypt the cyphertext with the private key for alias.
@@ -149,8 +159,4 @@ public class Vault {
 //		PrivateKeyEntry pke = getEntry(alias);
 //		return new KeyPair(pke.getCertificate().getPublicKey(), pke.getPrivateKey());
 //	}
-
-	private PrivateKey getPrivateKey(String alias) {
-		return getEntry(alias).getPrivateKey();
-	}
 }

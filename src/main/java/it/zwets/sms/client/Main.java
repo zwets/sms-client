@@ -91,7 +91,23 @@ public class Main {
                 String instanceId = args[3];
                 String inFile = args[4];
 
-                FileInputStream is = new FileInputStream(new File(inFile));
+                FileInputStream is = new FileInputStream(new File(inFile.equals("-") ? "/dev/stdin" : inFile));
+                OdkCrypto.Decryptor decryptor = new OdkCrypto.Decryptor(privKey, base64EncKey, instanceId);
+                decryptor.decrypt(is, System.out);
+            }
+            else if ((args.length == 5 || args.length == 7) && "kobo-vault-dec".equals(args[0]))
+            {
+                int argc = 1;
+                String keyStore = args[argc++];
+                String keyPass = args.length == 5 ? "123456" : args[argc++];
+                String alias = args.length == 5 ? "kobo" : args[argc++];
+                String base64EncKey = args[argc++];
+                String instanceId = args[argc++];
+                String inFile = args[argc++];
+
+                Vault vault = new Vault(keyStore, keyPass);
+                PrivateKey privKey = vault.getPrivateKey(alias);
+                FileInputStream is = new FileInputStream(new File(inFile.equals("-") ? "/dev/stdin" : inFile));
                 OdkCrypto.Decryptor decryptor = new OdkCrypto.Decryptor(privKey, base64EncKey, instanceId);
                 decryptor.decrypt(is, System.out);
             }
@@ -101,6 +117,7 @@ public class Main {
                 System.err.println("       sms-client encrypt PUBKEY");
                 System.err.println("       sms-client encrock PHONENUMBER");
                 System.err.println("       sms-client kobo-dec PKFILE B64SYMKEY INSTANCE INFILE");
+                System.err.println("       sms-client kobo-vault-dec KEYSTORE [KEYPASS ALIAS] B64SYMKEY INSTANCE INFILE");
                 System.err.println("       sms-client enc-sms PUBKEY RECIPIENT SENDER MESSAGE");
                 
                 System.exit(1);

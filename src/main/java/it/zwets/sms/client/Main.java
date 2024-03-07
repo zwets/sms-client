@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.Arrays;
 import java.util.Base64;
 
 import it.zwets.sms.crock.PhoneNumberEncoder;
@@ -19,7 +20,6 @@ import it.zwets.sms.message.SmsMessage;
 public class Main {
 
     public static final String DEFAULT_KEYPASS = "123456";
-    public static final PhoneNumberEncoder PHONE_ENCODER = new PhoneNumberEncoder();
     
     private static byte[] encryptWithPubkey(Path pubFile, byte[] plaintext) throws IOException {
         byte[] keyBytes = Files.readAllBytes(pubFile);
@@ -66,13 +66,26 @@ public class Main {
                 Files.write(Path.of("/dev/stdout"), 
                         encryptWithPubkey(Path.of(args[1]), Files.readAllBytes(Path.of("/dev/stdin"))));
             }
-            else if (args.length == 2 && "encrock".equals(args[0]))
+            else if ((args.length == 2 || args.length == 3) && "encrock".equals(args[0]))
             {
-                System.out.println(PHONE_ENCODER.encode(args[1]));
+                PhoneNumberEncoder crocker = args.length == 3 ?
+                        new PhoneNumberEncoder(Arrays.stream(args[1].split(" *, *")).mapToInt(Integer::parseInt).toArray()) :
+                        new PhoneNumberEncoder();
+                
+                System.out.println(crocker.encode(args[args.length - 1]));
             }
-            else if (args.length == 2 && "decrock".equals(args[0]))
+            else if ((args.length == 2 || args.length == 3) && "decrock".equals(args[0]))
             {
-                System.out.println(PHONE_ENCODER.decode(args[1]));
+                PhoneNumberEncoder crocker = args.length == 3 ?
+                        new PhoneNumberEncoder(Arrays.stream(args[1].split(" *, *")).mapToInt(Integer::parseInt).toArray()) :
+                        new PhoneNumberEncoder();
+                
+                System.out.println(crocker.decode(args[args.length - 1]));
+            }
+            else if (args.length == 2 && "alphabet".equals(args[0])) {
+                System.out.println(new PhoneNumberEncoder(
+                        Arrays.stream(args[1].split(" *, *")).mapToInt(Integer::parseInt).toArray())
+                            .getAlphabet());                
             }
             else if (args.length == 5 && "enc-sms".equals(args[0]))
             {
@@ -115,7 +128,8 @@ public class Main {
                 System.err.println("Usage: sms-client aliases KEYSTORE [KEYPASS]");
                 System.err.println("       sms-client pubkey KEYSTORE [KEYPASS] ALIAS");
                 System.err.println("       sms-client encrypt PUBKEY");
-                System.err.println("       sms-client encrock PHONENUMBER");
+                System.err.println("       sms-client encrock [SHUFFLEKEY] PHONENUMBER");
+                System.err.println("       sms-client alphabet SHUFFLEKEY");
                 System.err.println("       sms-client kobo-dec PKFILE B64SYMKEY INSTANCE INFILE");
                 System.err.println("       sms-client kobo-vault-dec KEYSTORE [KEYPASS ALIAS] B64SYMKEY INSTANCE INFILE");
                 System.err.println("       sms-client enc-sms PUBKEY RECIPIENT SENDER MESSAGE");

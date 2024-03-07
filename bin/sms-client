@@ -3,7 +3,8 @@
 export LC_ALL="C"
 set -euo pipefail
 
-JAR="$(dirname "$(realpath "$0")")/sms-client.jar"
+# This assumes a symlink in our base dir that points at the versioned jar
+JAR="$(dirname "$(realpath "$0")")/../sms-client.jar"
 [ -f "$JAR" ] || { echo "${0##*/}: symlink to the JAR is missing: $JAR" >&2; exit 1; }
 
 java -jar "$JAR" "$@"

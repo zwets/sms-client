@@ -96,6 +96,18 @@ public class CrockEncoder {
 		this.unMixer= unMixer;
 		setMangle(mangleTable == null ? NO_MANGLE : mangleTable);
 	}
+	
+	/**
+	 * Returns the alphabet used in mangled order.
+	 * @return the shuffled letters of the crock alphabet
+	 */
+	public String getAlphabet() {
+	    StringBuilder sb = new StringBuilder();
+	    for (int i = 0; i < 32; ++i) {
+	        sb.append(CROCKFORD_CODES[mangle[i]]);
+	    }
+	    return sb.toString();
+	}
 
 	/**
 	 * Encode long value to crock code.

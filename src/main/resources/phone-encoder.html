@@ -72,6 +72,26 @@ div#div_output {
   background-color: #FEE;
   border-color: #988;
 }
+
+div#div_alphabet {
+    padding: 20px 20px;
+}
+#alphabet {
+    font-family: Sans Mono, Mono;
+    font-size: 80%;
+    border-style: solid;
+    border-width: 1px;
+    padding: 2px 4px;
+}
+#alphabet.good {
+  color: #010;
+  background-color: #EFE;
+  border-color: #060;
+}
+#alphabet.bad {
+  color: #100;
+  background-color: #FEE;
+}
     </style>
     <script type="application/javascript">
 "use strict";
@@ -83,18 +103,23 @@ window.onload = function () {
   var input_field = document.getElementById("input");
   var output_div = document.getElementById("div_output");
   var output_span = document.getElementById("output");
+  var alphabet_div = document.getElementById("div_alphabet");
+  var alphabet_field = document.getElementById("alphabet");
+  var alphabet_param = new URLSearchParams(window.location.search).get('alphabet');
+  const default_alphabet = "0297WCYSD6AFKQEJ5N3BT4G8PXMHZ1VR";
 
-  function encode (input) {
+  function encode (input, alphabet) {
 
     var r = /^0([0-9]{9})$/.exec(input);
-    if (r !== null) {
+    var a = new String(/^([0123456789ABCDEFGHJKMNPQRSTVWXYZ]{32})$/.exec(alphabet));
+    if (r !== null && a !== null) {
 
       var p = r[1], n = 0;
       for (var i = 0; i < 6; ++i)
         for (var j = 0; j < 5; ++j, p >>= 1)
           n |= (p & 1) << (29 - (6*j + i));
 
-      var s = "", w = 6, a = "0297WCYSD6AFKQEJ5N3BT4G8PXMHZ1VR";
+      var s = "", w = 6;
       do { s = a.charAt(n & 31) + s; n >>= 5; w -= 1; } while (n != 0 || w > 0);
 
       return s.substr(0,3) + "-" + s.substr(3,3);
@@ -120,9 +145,16 @@ window.onload = function () {
     else if (input.charAt(0) != '0') {
       input_field.value = "0" + input; //input.slice(0,9);
     }
-    show_output(encode(input_field.value));
+    show_output(encode(input_field.value,alphabet_field.value));
   }, false);
 
+  alphabet_field.addEventListener("input", function (ev) {
+    alphabet_div.className = alphabet_field.className = /^([0123456789ABCDEFGHJKMNPQRSTVWXYZ]{32})$/.exec(alphabet_field.value) ? "good" : "bad";
+    show_output(encode(input_field.value,alphabet_field.value));
+  }, false);
+
+  alphabet_field.value = alphabet_param !== null ? alphabet_param : default_alphabet;
+  alphabet_div.className = alphabet_field.className = /^([0123456789ABCDEFGHJKMNPQRSTVWXYZ]{32})$/.exec(alphabet_field.value) ? "good" : "bad";
   input_field.value = "0";
   input_field.focus();
   show_output (null);
@@ -137,6 +169,9 @@ window.onload = function () {
       </div>
       <div id="div_output">
         <span id="output">???-???</span>
+      </div>
+      <div id="div_alphabet">
+        <input id="alphabet" size="32" maxlength="32" pattern="[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{32}" title="Enter the 32 character shuffled alphabet" autocomplete="off"></input>
       </div>
     </div>
   </body>

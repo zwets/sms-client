@@ -66,6 +66,14 @@ public class PhoneNumberEncoder {
 	}
 
 	/**
+	 * Returns the shuffled alphabet used by this encoder.
+	 * @return the shuffled Crock Code alphabet used
+	 */
+	public String getAlphabet() {
+	    return this.crockEncoder.getAlphabet();
+	}
+	
+	/**
 	 * Encode phoneNumber to its crock code
 	 * 
 	 * The phone number must be a 9-digit string, or IllegalArgumentException will be thrown.

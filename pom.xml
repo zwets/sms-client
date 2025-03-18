@@ -4,7 +4,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>it.zwets</groupId>
    <artifactId>sms-client</artifactId>
-   <version>1.1.6</version>
+   <version>1.1.7-SNAPSHOT</version>
    <packaging>jar</packaging>
    <name>sms-client</name>
    <description>Tools for testing and managing sms-scheduler and sms-gateway</description>

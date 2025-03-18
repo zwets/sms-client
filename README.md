@@ -67,3 +67,6 @@ Combining the previous two commands:
 
     echo "Plaintext" | bin/pubkey-encrypt $(bin/get-pubkey KEYSTORE CLIENT)
 
+See the other scripts (notably `sms-client`) in the `bin` directory for other
+supported functions.
+

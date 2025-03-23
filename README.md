@@ -41,9 +41,14 @@ You should restrict access to these files in your production environment.
 
 ## Installation
 
-Run `./make-dist.sh` to generate a distributable tarball.  Unpack this im
-`/opt` and you will have the runnable jar in `/opt/sms-client`, and the
-scripts in `/opt/sms-client/bin`.
+Run `./make-dist.sh` to generate a distributable tarball.
+
+Unpack the tarball in `/opt` on the target machine:
+
+    sudo tar --no-same-owner --no-same-perm -C /opt -xzf sms-client.tar.gz
+
+You now have the runnable jar in `/opt/sms-client`, and various scripts
+in `/opt/sms-client/bin`.
 
 
 ## Usage

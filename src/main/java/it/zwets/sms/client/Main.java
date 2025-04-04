@@ -97,18 +97,19 @@ public class Main {
                 Files.write(Path.of("/dev/stdout"), 
                         encryptWithPubkey(Path.of(args[1]), sms.asBytes()));
             }
-            else if (args.length == 5 && "kobo-dec".equals(args[0]))
+            else if (args.length == 6 && "kobo-dec".equals(args[0]))
             {
                 PrivateKey privKey = PkiUtils.readPrivateKey(args[1]);
                 String base64EncKey = args[2];
                 String instanceId = args[3];
-                String inFile = args[4];
+                int seqNum = Integer.valueOf(args[4]);
+                String inFile = args[5];
 
                 FileInputStream is = new FileInputStream(new File(inFile.equals("-") ? "/dev/stdin" : inFile));
-                OdkCrypto.Decryptor decryptor = new OdkCrypto.Decryptor(privKey, base64EncKey, instanceId);
+                OdkCrypto.Decryptor decryptor = new OdkCrypto.Decryptor(privKey, base64EncKey, instanceId, seqNum);
                 decryptor.decrypt(is, System.out);
             }
-            else if ((args.length == 5 || args.length == 7) && "kobo-vault-dec".equals(args[0]))
+            else if ((args.length == 6 || args.length == 8) && "kobo-vault-dec".equals(args[0]))
             {
                 int argc = 1;
                 String keyStore = args[argc++];
@@ -116,12 +117,13 @@ public class Main {
                 String alias = args.length == 5 ? "kobo" : args[argc++];
                 String base64EncKey = args[argc++];
                 String instanceId = args[argc++];
+                int seqNum = Integer.valueOf(args[argc++]);
                 String inFile = args[argc++];
 
                 Vault vault = new Vault(keyStore, keyPass);
                 PrivateKey privKey = vault.getPrivateKey(alias);
                 FileInputStream is = new FileInputStream(new File(inFile.equals("-") ? "/dev/stdin" : inFile));
-                OdkCrypto.Decryptor decryptor = new OdkCrypto.Decryptor(privKey, base64EncKey, instanceId);
+                OdkCrypto.Decryptor decryptor = new OdkCrypto.Decryptor(privKey, base64EncKey, instanceId, seqNum);
                 decryptor.decrypt(is, System.out);
             }
             else {
@@ -130,8 +132,8 @@ public class Main {
                 System.err.println("       sms-client encrypt PUBKEY");
                 System.err.println("       sms-client encrock [SHUFFLEKEY] PHONENUMBER");
                 System.err.println("       sms-client alphabet SHUFFLEKEY");
-                System.err.println("       sms-client kobo-dec PKFILE B64SYMKEY INSTANCE INFILE");
-                System.err.println("       sms-client kobo-vault-dec KEYSTORE [KEYPASS ALIAS] B64SYMKEY INSTANCE INFILE");
+                System.err.println("       sms-client kobo-dec PKFILE B64SYMKEY INSTANCE SEQNUM INFILE");
+                System.err.println("       sms-client kobo-vault-dec KEYSTORE [KEYPASS ALIAS] B64SYMKEY INSTANCE SEQNUM INFILE");
                 System.err.println("       sms-client enc-sms PUBKEY RECIPIENT SENDER MESSAGE");
                 
                 System.exit(1);

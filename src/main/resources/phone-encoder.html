@@ -102,7 +102,7 @@ window.onload = function () {
   var input_div = document.getElementById("div_input");
   var input_field = document.getElementById("input");
   var output_div = document.getElementById("div_output");
-  var output_span = document.getElementById("output");
+  var output_field = document.getElementById("output");
   var alphabet_div = document.getElementById("div_alphabet");
   var alphabet_field = document.getElementById("alphabet");
   var alphabet_param = new URLSearchParams(window.location.search).get('alphabet');
@@ -144,14 +144,25 @@ window.onload = function () {
     }
   }
 
-  function show_output (str) {
+  function set_output (str) {
     if (str) {
-      main_div.className = input_div.className = input_field.className = output_div.className = output_span.className = "good";
-      output_span.innerHTML = str;
+      main_div.className = input_div.className = input_field.className = output_div.className = output_field.className = "good";
+      output_field.value = str;
     }
     else {
-      main_div.className = input_div.className = input_field.className = output_div.className = output_span.className = "wrong";
-      output_span.innerHTML = "???-???";
+      main_div.className = input_div.className = input_field.className = output_div.className = output_field.className = "wrong";
+      output_field.value = "???-???";
+    }
+  }
+
+  function set_input (str) {
+    if (str) {
+      main_div.className = input_div.className = input_field.className = output_div.className = output_field.className = "good";
+      input_field.value = str;
+    }
+    else {
+      main_div.className = input_div.className = input_field.className = output_div.className = output_field.className = "wrong";
+      input_field.value = "0";
     }
   }
 
@@ -163,19 +174,33 @@ window.onload = function () {
     else if (input.charAt(0) != '0') {
       input_field.value = "0" + input; //input.slice(0,9);
     }
-    show_output(encode(input_field.value,alphabet_field.value));
+    set_output(encode(input_field.value,alphabet_field.value));
+  }, false);
+
+  output_field.addEventListener("input", function (ev) {
+    var output = output_field.value
+    var s = output_field.selectionStart, e = output_field.selectionEnd;
+    if (output.length > 3 && output.indexOf('-') == -1) {
+      if (s >= 3) ++s;
+      if (e >= 3) ++e;
+      output = output.substr(0,3) + "-" + output.substr(3,3);
+    }
+    output_field.value = output.toUpperCase();
+    output_field.setSelectionRange(s,e);
+    set_input(decode(output_field.value,alphabet_field.value));
   }, false);
 
   alphabet_field.addEventListener("input", function (ev) {
     alphabet_div.className = alphabet_field.className = /^([0123456789ABCDEFGHJKMNPQRSTVWXYZ]{32})$/.exec(alphabet_field.value) ? "good" : "bad";
-    show_output(encode(input_field.value,alphabet_field.value));
+    set_output(encode(input_field.value,alphabet_field.value));
+    set_input(decode(output_field.value,alphabet_field.value));
   }, false);
 
   alphabet_field.value = alphabet_param !== null ? alphabet_param : default_alphabet;
   alphabet_div.className = alphabet_field.className = /^([0123456789ABCDEFGHJKMNPQRSTVWXYZ]{32})$/.exec(alphabet_field.value) ? "good" : "bad";
   input_field.value = "0";
   input_field.focus();
-  show_output (null);
+  set_output (null);
 
 }
     </script>
@@ -186,7 +211,7 @@ window.onload = function () {
         <input id="input" size="10" maxlength="10" pattern="0[0-9]{9}" title="Enter a 10 digit phone number starting with 0" autocomplete="off" autofocus="true"></input>
       </div>
       <div id="div_output">
-        <span id="output">???-???</span>
+        <input id="output" size="7" maxlength="7" pattern="[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{3}-[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{3}" title="Enter a crock code" autocomplete="off"</input>
       </div>
       <div id="div_alphabet">
         <input id="alphabet" size="32" maxlength="32" pattern="[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{32}" title="Enter the 32 character shuffled alphabet" autocomplete="off"></input>
